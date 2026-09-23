@@ -58,9 +58,9 @@
 
       <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
-          <a class="navbar-item" href="index.html"> Home </a>
+          <a class="navbar-item" href="index_signed_in.html"> Home </a>
 
-          <a class="navbar-item" href="news.html"> News </a>
+          <a class="navbar-item" href="news_signed_in.html"> News </a>
 
           <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link"> More </a>
@@ -68,7 +68,7 @@
             <div class="navbar-dropdown">
               <a class="navbar-item"> About </a>
               <a class="navbar-item is-selected"> Jobs </a>
-              <a class="navbar-item" href="contact.html"> Contact </a>
+              <a class="navbar-item" href="contact_signed_in.html"> Contact </a>
               <hr class="navbar-divider" />
               <a class="navbar-item"> Report an issue </a>
             </div>
@@ -79,13 +79,51 @@
           <div class="navbar-item">
             <div class="buttons">
               <a class="button is-primary" href="sign_up.html">
-                <strong>Sign up</strong>
+                <strong>My account</strong>
               </a>
-              <a class="button is-light" href="sign_in.html"> Log in </a>
+              <a class="button is-light" href="index.html"> Log out </a>
             </div>
           </div>
         </div>
       </div>
     </nav>
+    <!-- Rest of your HTML content above -->
+
+    <!-- ADD THIS SCRIPT AT THE VERY BOTTOM -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged
+      } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyChg8nk4jHsziv9PfIKwC_kbg8UM4E4-MM",
+        authDomain: "newwebsite-7486f.firebaseapp.com",
+        projectId: "newwebsite-7486f",
+        storageBucket: "newwebsite-7486f.firebasestorage.app",
+        messagingSenderId: "477829357478",
+        appId: "1:477829357478:web:b17e366956c811991db967"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // Reload page if retrieved from browser back-button cache
+      window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+          window.location.reload();
+        }
+      });
+
+      // Redirect user to sign-in page if not logged in
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          window.location.replace("sign_in.html");
+        }
+      });
+    </script>
+  </body>
+</html>
   </html>
 </html>

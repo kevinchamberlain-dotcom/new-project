@@ -3,19 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>My First website</title>
+    <title>My First Website - Log In</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
     />
   </head>
-  <!doctype html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <title>My Website</title>
-    </head>
-
+  <body>
+    <!-- Navbar -->
     <nav class="navbar" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
         <a class="navbar-item" href="https://bulma.io">
@@ -59,7 +54,6 @@
       <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
           <a class="navbar-item" href="index.html"> Home </a>
-
           <a class="navbar-item" href="news.html"> News </a>
 
           <div class="navbar-item has-dropdown is-hoverable">
@@ -87,5 +81,134 @@
         </div>
       </div>
     </nav>
-  </html>
+
+    <!-- Centered Form Container -->
+    <div class="section">
+      <div class="container" style="max-width: 450px">
+        <form id="login-form" class="box">
+          <h2 class="title is-4 has-text-centered">Log In</h2>
+
+          <div class="field">
+            <label class="label">Email</label>
+            <div class="control">
+              <input
+                id="login-email"
+                class="input"
+                type="email"
+                placeholder="e.g. alex@example.com"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Password</label>
+            <div class="control">
+              <input
+                id="login-password"
+                class="input"
+                type="password"
+                placeholder="********"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Error / Status Message Container -->
+          <p
+            id="error-message"
+            class="has-text-danger mt-2"
+            style="display: none"
+          ></p>
+
+          <button
+            type="submit"
+            id="login-btn"
+            class="button is-primary is-fullwidth mt-4"
+          >
+            Log in
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Firebase Authentication Script -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyChg8nk4jHsziv9PfIKwC_kbg8UM4E4-MM",
+        authDomain: "newwebsite-7486f.firebaseapp.com",
+        projectId: "newwebsite-7486f",
+        storageBucket: "newwebsite-7486f.firebasestorage.app",
+        messagingSenderId: "477829357478",
+        appId: "1:477829357478:web:b17e366956c811991db967",
+        measurementId: "G-3J2VWZE1XJ",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      const loginForm = document.getElementById("login-form");
+      const emailInput = document.getElementById("login-email");
+      const passwordInput = document.getElementById("login-password");
+      const errorMessage = document.getElementById("error-message");
+      const loginBtn = document.getElementById("login-btn");
+
+      function isValidEmailFormat(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+      }
+
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passwordInput.value;
+
+        errorMessage.style.display = "none";
+        errorMessage.textContent = "";
+
+        // 1. Instant Email Format Check
+        if (!isValidEmailFormat(email)) {
+          errorMessage.textContent = "Please enter a valid email address.";
+          errorMessage.style.display = "block";
+          return;
+        }
+
+        loginBtn.classList.add("is-loading");
+
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+
+          // Replaces history entry so back button won't return to sign_in.html
+          window.location.replace("signed_in.html");
+        } catch (error) {
+          console.log("Firebase Error Object:", error);
+          loginBtn.classList.remove("is-loading");
+
+          // 2. Error Handlers
+          if (error.code === "auth/user-disabled") {
+            errorMessage.textContent =
+              "This account has been suspended. Please contact support.";
+          } else if (error.code === "auth/invalid-email") {
+            errorMessage.textContent = "Please enter a valid email address.";
+          } else if (error.code === "auth/user-not-found") {
+            errorMessage.textContent =
+              "No account found with this email address.";
+          } else {
+            errorMessage.textContent =
+              "Incorrect email or password. Please try again.";
+          }
+
+          errorMessage.style.display = "block";
+        }
+      });
+    </script>
+  </body>
 </html>

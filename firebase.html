@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Firebase Auth Demo</title>
+  </head>
+  <body>
+    <h2>Real Authentication System</h2>
+
+    <div id="auth-container">
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="signup-btn">Sign Up</button>
+      <button id="login-btn">Log In</button>
+    </div>
+
+    <div id="user-info" style="display: none">
+      <h3>Welcome, <span id="user-email"></span>!</h3>
+      <button id="logout-btn">Log Out</button>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+      // 1. Paste your Firebase project configuration here:
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "SENDER_ID",
+        appId: "APP_ID",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // Elements
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const authContainer = document.getElementById("auth-container");
+      const userInfo = document.getElementById("user-info");
+
+      // Sign Up
+      document
+        .getElementById("signup-btn")
+        .addEventListener("click", async () => {
+          try {
+            await createUserWithEmailAndPassword(
+              auth,
+              emailInput.value,
+              passwordInput.value,
+            );
+            alert("Account created successfully!");
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+
+      // Log In
+      document
+        .getElementById("login-btn")
+        .addEventListener("click", async () => {
+          try {
+            await signInWithEmailAndPassword(
+              auth,
+              emailInput.value,
+              passwordInput.value,
+            );
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+
+      // Log Out
+      document
+        .getElementById("logout-btn")
+        .addEventListener("click", () => signOut(auth));
+
+      // Listen to Authentication State (Tracks logged in user)
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          authContainer.style.display = "none";
+          userInfo.style.display = "block";
+          document.getElementById("user-email").innerText = user.email;
+        } else {
+          authContainer.style.display = "block";
+          userInfo.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
